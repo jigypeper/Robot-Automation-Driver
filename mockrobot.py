@@ -26,9 +26,8 @@ class MockRobot:
         MockRobot.processID = destinationLocation + 1
         return self.processID
         
-    def status():
-        #MockRobot.processStatus = random.choice(["In Progress", "Finished Successfully", "Terminated With Error"])
-        MockRobot.processStatus = "Finished Successfully"
+    def status(self):
+        MockRobot.processStatus = random.choice(["In Progress", "Finished Successfully", "Terminated With Error"])
         return MockRobot.processStatus
         
 

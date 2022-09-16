@@ -10,7 +10,9 @@ while run:
     client.connect(address)
     message = input("> ")
     client.sendall(message.encode('utf-8'))
+
+    if "abort" in message:
+        run = False
+
     data = client.recv(1024).decode('utf-8')
     print(data)
-    if message == "abort":
-        run = False
