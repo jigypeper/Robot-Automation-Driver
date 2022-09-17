@@ -81,6 +81,7 @@ if __name__ == "__main__":
     # empty list and variable for controlling task flow and initialization
     scheduled_tasks = []
     initialized = 0
+    previous_operation = ""
     while True:
         # Accept connection from scheduler
         client, addr = driver.server.accept()
@@ -127,11 +128,17 @@ if __name__ == "__main__":
                     if scheduled_tasks[1] in driver.operations \
                             and ("Destination" in ast.literal_eval(scheduled_tasks[2])
                                  or "Source" in ast.literal_eval(scheduled_tasks[2])):
-                        response = driver.execute_operation(
-                            scheduled_tasks[1],
-                            ast.literal_eval(scheduled_tasks[2]),
-                            ast.literal_eval(scheduled_tasks[3])
-                        )
+                        # make sure operation isn't repeated if response is successful
+                        if previous_operation != scheduled_tasks[1]:
+                            response = driver.execute_operation(
+                                scheduled_tasks[1],
+                                ast.literal_eval(scheduled_tasks[2]),
+                                ast.literal_eval(scheduled_tasks[3])
+                            )
+                            if response == "":
+                                previous_operation = scheduled_tasks[1]
+                        else:
+                            response = "Cannot repeat operation"
                     else:
                         response = "invalid operation"
                         scheduled_tasks = ["initialize"]
@@ -148,6 +155,7 @@ if __name__ == "__main__":
             if "abort" in data:
                 scheduled_tasks = []
                 initialized = 0
+                previous_operation = ""
                 response = driver.abort()
             elif len(scheduled_tasks) == 4:
                 scheduled_tasks = ["initialize"]
