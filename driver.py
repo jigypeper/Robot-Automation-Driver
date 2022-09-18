@@ -145,6 +145,9 @@ if __name__ == "__main__":
                 except IndexError:
                     response = "Incorrect input format"
                     scheduled_tasks = ["initialize"]
+                except TypeError:
+                    response = "Incorrect input format"
+                    scheduled_tasks = ["initialize"]
                 except ValueError:
                     response = "Incorrect input parameter"
                     scheduled_tasks = ["initialize"]
