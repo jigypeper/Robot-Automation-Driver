@@ -129,7 +129,10 @@ if __name__ == "__main__":
                             and ("Destination" in ast.literal_eval(scheduled_tasks[2])
                                  or "Source" in ast.literal_eval(scheduled_tasks[2])):
                         # make sure operation isn't repeated if response is successful
-                        if previous_operation != scheduled_tasks[1]:
+                        if previous_operation == "pick" \
+                            and scheduled_tasks[1] == "transfer":
+                            response = "Cannot run transfer operation following pick"
+                        elif previous_operation != scheduled_tasks[1]:
                             response = driver.execute_operation(
                                 scheduled_tasks[1],
                                 ast.literal_eval(scheduled_tasks[2]),
