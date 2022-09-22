@@ -27,7 +27,7 @@ class DeviceDriver(socket.socket):
             return result
         else:
             return ""
-        
+
     def initialize(self):
         self.robot.home()
         result = DeviceDriver.check_status(self)
@@ -72,7 +72,7 @@ class DeviceDriver(socket.socket):
 
     def abort(self):
         return ""
-        
+
 
 if __name__ == "__main__":
     # create instance of the device driver and open connection
@@ -130,7 +130,7 @@ if __name__ == "__main__":
                                  or "Source" in ast.literal_eval(scheduled_tasks[2])):
                         # make sure operation isn't repeated if response is successful
                         if previous_operation == "pick" \
-                            and scheduled_tasks[1] == "transfer":
+                                and scheduled_tasks[1] == "transfer":
                             response = "Cannot run transfer operation following pick"
                         elif previous_operation != scheduled_tasks[1]:
                             response = driver.execute_operation(
