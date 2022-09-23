@@ -82,6 +82,18 @@ def test_incorrect_input_2():
 
 
 def test_incorrect_input_3():
-    result, scheduled_tasks, initialized, previous_operation = data_handler("pick ['Destination'] ['70]", driver, ["initialize"], 1, "")
+    result, scheduled_tasks, initialized, previous_operation = data_handler("pick ['Source'] ['70]", driver, ["initialize"], 1, "")
 
     assert result == "Incorrect input format, make sure to use brackets or exclamation marks"
+
+
+def test_transfer_after_pick():
+    result, scheduled_tasks, initialized, previous_operation = data_handler("transfer ['Destination','Source'] [70,80]", driver, ["initialize"], 1, "pick")
+
+    assert result == "Cannot run transfer operation following pick"
+
+
+def test_pick_after_pick():
+    result, scheduled_tasks, initialized, previous_operation = data_handler("pick ['Source'] [70]", driver, ["initialize"], 1, "pick")
+
+    assert result == "Cannot repeat operation"

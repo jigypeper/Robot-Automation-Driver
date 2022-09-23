@@ -206,9 +206,6 @@ if __name__ == "__main__":
             )
 
             # send result to scheduler
-            print(scheduled_tasks)
-            print(initialized)
-            print(result)
             client.send(result.encode("utf-8"))
 
             client.close()
