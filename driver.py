@@ -73,6 +73,111 @@ class DeviceDriver(socket.socket):
     def abort(self):
         return ""
 
+def data_handler(operation: str, driver_instance: DeviceDriver, operation_list: list, initialized_check: int, previous_task: str):
+    if operation != "initialize":
+        # Create list from operation
+        operation = operation.split()
+
+    print("Received", operation, "from the client")
+
+    # Add received operation to scheduled tasks list
+    if operation not in operation_list:
+        if type(operation) == list:
+            operation_list.extend(operation)
+        else:
+            operation_list.append(operation)
+
+    print(operation_list)
+
+    # Check for initialization as first operation
+    if operation_list[0] == "initialize" and initialized_check == 0:
+        response = driver_instance.initialize()
+        # Ensure initialization is successful
+        if "Error" in response:
+            while "Error" in response and initialized_check == 0:
+                response = driver_instance.initialize()
+                if response == "":
+                    initialized_check += 1
+                    return response, operation_list, initialized_check, previous_task
+        else:
+            operation_list = ["initialize"]
+            initialized_check += 1
+            return response, operation_list, initialized_check, previous_task
+    elif operation_list[0] == "initialize" and initialized_check == 1 and operation == "initialize":
+        response = "Already initialized"
+        operation_list = ["initialize"]
+        return response, operation_list, initialized_check, previous_task
+    elif operation_list[0] != "initialize" and operation != "initialize":
+        response = "Not initialized"
+        operation_list = []
+        initialized_check = 0
+        return response, operation_list, initialized_check, previous_task
+
+    
+
+    # execute operation only if initialized and not abort
+    if len(operation_list) > 1 and operation_list[0] == "initialize" and operation_list[1] != "abort":
+        try:
+            print(operation_list)
+            if operation_list[1] in driver_instance.operations \
+                    and ("Destination" in ast.literal_eval(operation_list[2])
+                            or "Source" in ast.literal_eval(operation_list[2])):
+                # make sure operation isn't repeated if response is successful
+                if previous_task == "pick" \
+                        and operation_list[1] == "transfer":
+                    response = "Cannot run transfer operation following pick"
+                    operation_list = ["initialize"]
+                    initialized_check = 1
+                    previous_task = "pick"
+                    return response, operation_list, initialized_check, previous_task
+                elif previous_task != operation_list[1]:
+                    response = driver_instance.execute_operation(
+                        operation_list[1],
+                        ast.literal_eval(operation_list[2]),
+                        ast.literal_eval(operation_list[3])
+                    )
+                    if response == "":
+                        previous_task = operation_list[1]
+                        initialized_check = 1
+                        operation_list = ["initialize"]
+                        return response, operation_list, initialized_check, previous_task
+                else:
+                    response = "Cannot repeat operation"
+                    previous_task = operation_list[1]
+                    operation_list = ["initialize"]
+                    initialized_check = 1
+                    return response, operation_list, initialized_check, previous_task
+            else:
+                response = "invalid operation"
+                operation_list = ["initialize"]
+                return response, operation_list, initialized_check, previous_task
+        except IndexError:
+            response = "Incorrect input format, list paramater mismatch"
+            operation_list = ["initialize"]
+            return response, operation_list, initialized_check, previous_task
+        except TypeError:
+            response = "Incorrect input format, can't add string to integer"
+            operation_list = ["initialize"]
+            return response, operation_list, initialized_check, previous_task
+        except ValueError:
+            response = "Incorrect input parameter, maybe an empty string"
+            operation_list = ["initialize"]
+            return response, operation_list, initialized_check, previous_task
+        except SyntaxError:
+            response = "Incorrect input format, make sure to use brackets or exclamation marks"
+            operation_list = ["initialize"]
+            return response, operation_list, initialized_check, previous_task
+
+    if "abort" in operation:
+        operation_list = []
+        initialized_check = 0
+        previous_task = ""
+        response = driver_instance.abort()
+        return response, operation_list, initialized_check, previous_task
+    elif len(operation_list) == 4:
+        operation_list = ["initialize"]
+        return response, operation_list, initialized_check, previous_task
+
 
 if __name__ == "__main__":
     # create instance of the device driver and open connection
@@ -82,6 +187,7 @@ if __name__ == "__main__":
     scheduled_tasks = []
     initialized = 0
     previous_operation = ""
+
     while True:
         # Accept connection from scheduler
         print("Start listening on", driver.ip, ":", driver.port)
@@ -91,84 +197,19 @@ if __name__ == "__main__":
             # Listen for operation
             data = client.recv(1024).decode("utf-8")
 
-            if data != "initialize":
-                # Create list from operation
-                data = data.split()
-
-            print("Received", data, "from the client")
-
-            # Add received data to scheduled tasks list
-            if data not in scheduled_tasks:
-                if type(data) == list:
-                    scheduled_tasks.extend(data)
-                else:
-                    scheduled_tasks.append(data)
-
-            print(scheduled_tasks)
-
-            # Check for initialization as first operation
-            if scheduled_tasks[0] == "initialize" and initialized == 0:
-                response = driver.initialize()
-            elif scheduled_tasks[0] == "initialize" and initialized == 1 and data == "initialize":
-                response = "Already initialized"
-            elif scheduled_tasks[0] != "initialize" and data != "initialize":
-                response = "Not initialized"
-                scheduled_tasks = []
-                initialized = 0
-
-            # Ensure initialization is successful
-            while "Error" in response and initialized == 0:
-                response = driver.initialize()
-                if response == "":
-                    initialized += 1
-
-            # execute operation only if initialized
-            if len(scheduled_tasks) > 1 and scheduled_tasks[0] == "initialize":
-                try:
-                    if scheduled_tasks[1] in driver.operations \
-                            and ("Destination" in ast.literal_eval(scheduled_tasks[2])
-                                 or "Source" in ast.literal_eval(scheduled_tasks[2])):
-                        # make sure operation isn't repeated if response is successful
-                        if previous_operation == "pick" \
-                                and scheduled_tasks[1] == "transfer":
-                            response = "Cannot run transfer operation following pick"
-                        elif previous_operation != scheduled_tasks[1]:
-                            response = driver.execute_operation(
-                                scheduled_tasks[1],
-                                ast.literal_eval(scheduled_tasks[2]),
-                                ast.literal_eval(scheduled_tasks[3])
-                            )
-                            if response == "":
-                                previous_operation = scheduled_tasks[1]
-                        else:
-                            response = "Cannot repeat operation"
-                    else:
-                        response = "invalid operation"
-                        scheduled_tasks = ["initialize"]
-                except IndexError:
-                    response = "Incorrect input format"
-                    scheduled_tasks = ["initialize"]
-                except TypeError:
-                    response = "Incorrect input format"
-                    scheduled_tasks = ["initialize"]
-                except ValueError:
-                    response = "Incorrect input parameter"
-                    scheduled_tasks = ["initialize"]
-                except SyntaxError:
-                    response = "Incorrect input format"
-                    scheduled_tasks = ["initialize"]
-
-            if "abort" in data:
-                scheduled_tasks = []
-                initialized = 0
-                previous_operation = ""
-                response = driver.abort()
-            elif len(scheduled_tasks) == 4:
-                scheduled_tasks = ["initialize"]
+            result, scheduled_tasks, initialized, previous_operation = data_handler(
+                data, 
+                driver, 
+                scheduled_tasks, 
+                initialized, 
+                previous_operation
+            )
 
             # send result to scheduler
-            print(response)
-            client.send(response.encode("utf-8"))
+            print(scheduled_tasks)
+            print(initialized)
+            print(result)
+            client.send(result.encode("utf-8"))
 
             client.close()
             break
