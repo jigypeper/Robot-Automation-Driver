@@ -84,18 +84,18 @@ if __name__ == "__main__":
     previous_operation = ""
     while True:
         # Accept connection from scheduler
+        print("Start listening on", driver.ip, ":", driver.port)
         client, addr = driver.server.accept()
-        print('Start listening on', driver.ip, ':', driver.port)
-        print('Received connection from', addr[0], ':', addr[1])
+        print("Received connection from", addr[0], ":", addr[1])
         while True:
             # Listen for operation
-            data = client.recv(1024).decode('utf-8')
+            data = client.recv(1024).decode("utf-8")
 
             if data != "initialize":
                 # Create list from operation
                 data = data.split()
 
-            print('Received', data, 'from the client')
+            print("Received", data, "from the client")
 
             # Add received data to scheduled tasks list
             if data not in scheduled_tasks:
@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
             # send result to scheduler
             print(response)
-            client.send(response.encode('utf-8'))
+            client.send(response.encode("utf-8"))
 
             client.close()
             break
