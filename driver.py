@@ -73,7 +73,9 @@ class DeviceDriver(socket.socket):
     def abort(self):
         return ""
 
-def data_handler(operation: str, driver_instance: DeviceDriver, operation_list: list, initialized_check: int, previous_task: str):
+
+def data_handler(operation: str, driver_instance: DeviceDriver,
+                 operation_list: list, initialized_check: int, previous_task: str):
     if operation != "initialize":
         # Create list from operation
         operation = operation.split()
@@ -113,8 +115,6 @@ def data_handler(operation: str, driver_instance: DeviceDriver, operation_list: 
         initialized_check = 0
         return response, operation_list, initialized_check, previous_task
 
-    
-
     # execute operation only if initialized and not abort
     if len(operation_list) > 1 and operation_list[0] == "initialize" and operation_list[1] != "abort":
         try:
@@ -152,15 +152,15 @@ def data_handler(operation: str, driver_instance: DeviceDriver, operation_list: 
                 operation_list = ["initialize"]
                 return response, operation_list, initialized_check, previous_task
         except IndexError:
-            response = "Incorrect input format, list paramater mismatch"
+            response = "Incorrect input format, list parameter mismatch"
             operation_list = ["initialize"]
             return response, operation_list, initialized_check, previous_task
         except TypeError:
-            response = "Incorrect input format, can't add string to integer"
+            response = "Incorrect input format, parameter values incorrect"
             operation_list = ["initialize"]
             return response, operation_list, initialized_check, previous_task
         except ValueError:
-            response = "Incorrect input parameter, maybe an empty string"
+            response = "Incorrect input format, make sure to use brackets or exclamation marks"
             operation_list = ["initialize"]
             return response, operation_list, initialized_check, previous_task
         except SyntaxError:
