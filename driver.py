@@ -74,6 +74,7 @@ class DeviceDriver(socket.socket):
         return ""
 
 
+# handles the data recieved from the scheduler
 def data_handler(operation: str, driver_instance: DeviceDriver,
                  operation_list: list, initialized_check: int, previous_task: str):
     if operation != "initialize":
@@ -197,6 +198,7 @@ if __name__ == "__main__":
             # Listen for operation
             data = client.recv(1024).decode("utf-8")
 
+            # Process the data, run the command, return any results from commands
             result, scheduled_tasks, initialized, previous_operation = data_handler(
                 data, 
                 driver, 
