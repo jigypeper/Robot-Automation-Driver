@@ -1,6 +1,10 @@
 # Robot-Automation-Driver
 A program to simulate the control of a networked robot.
 
+To run the unit test, install pytest, open a terminal/powershell and run:  
+`pytest test_driver.py`
+
+
 ## Instructions
 
 	1.	Install Python 3.10.
@@ -13,14 +17,14 @@ A program to simulate the control of a networked robot.
 		1.	CD HighRes-BioSolutions-Automation-Driver
 
 	5.	Run the following command:
-		1.	python3 driver.py
+		1.	`python3 driver.py`
 
 	6.	Open another CMD/Powershell or terminal
 
 	7.	Change to the same directory
 
 	8.	run the following command:
-		1.	python3 schedulerprogram.py
+		1.	`python3 schedulerprogram.py`
 
 	9.	Send commands from this terminal to the driver and await response.
 
