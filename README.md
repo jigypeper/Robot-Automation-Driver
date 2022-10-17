@@ -6,7 +6,6 @@ To run the unit test, install pytest, open a terminal/powershell and run:
 
 
 ## Instructions
-
 	1.	Install Python 3.10.
 
 	2.	Add to path during installation if running windows
@@ -17,14 +16,14 @@ To run the unit test, install pytest, open a terminal/powershell and run:
 		1.	CD HighRes-BioSolutions-Automation-Driver
 
 	5.	Run the following command:
-		1.	`python3 driver.py`
+		1.	python3 driver.py
 
 	6.	Open another CMD/Powershell or terminal
 
 	7.	Change to the same directory
 
 	8.	run the following command:
-		1.	`python3 schedulerprogram.py`
+		1.	python3 schedulerprogram.py
 
 	9.	Send commands from this terminal to the driver and await response.
 
