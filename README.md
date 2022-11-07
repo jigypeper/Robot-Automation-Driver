@@ -13,7 +13,7 @@ To run the unit test, install pytest, open a terminal/powershell and run:
 	3.	Open CMD/Powershell, or terminal.
 
 	4.	Change directory to where the code is saved:
-		1.	CD HighRes-BioSolutions-Automation-Driver
+		1.	CD Robot-Automation-Driver
 
 	5.	Run the following command:
 		1.	python3 driver.py
