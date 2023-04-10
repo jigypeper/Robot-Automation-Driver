@@ -40,11 +40,11 @@ class DeviceDriver(socket.socket):
             if len(parameter_values) == 1 and (operation == "pick" or operation == "place"):
                 if operation == "pick" and "Source" in parameter_name:
                     self.robot.pick(parameter_values[0])
-                    result = DeviceDriver.check_status(self)
+                    result = self.check_status()
                     return result
                 elif operation == "place" and "Destination" in parameter_name:
                     self.robot.place(parameter_values[0])
-                    result = DeviceDriver.check_status(self)
+                    result = self.check_status()
                     return result
                 else:
                     return "Wrong combination of parameters"
@@ -54,13 +54,13 @@ class DeviceDriver(socket.socket):
                         and "Source" in parameter_name[1] and operation == "transfer":
                     self.robot.pick(parameter_values[1])
                     self.robot.place(parameter_values[0])
-                    result = DeviceDriver.check_status(self)
+                    result = self.check_status()
                     return result
                 elif "Source" in parameter_name[0] \
                         and "Destination" in parameter_name[1] and operation == "transfer":
                     self.robot.pick(parameter_values[0])
                     self.robot.place(parameter_values[1])
-                    result = DeviceDriver.check_status(self)
+                    result = self.check_status()
                     return result
                 else:
                     return "Wrong combination of parameters"
