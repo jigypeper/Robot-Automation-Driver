@@ -76,7 +76,7 @@ class DeviceDriver(socket.socket):
 
 # handles the data recieved from the scheduler
 def data_handler(operation: str, driver_instance: DeviceDriver,
-                 operation_list: list, initialized_check: int, previous_task: str):
+                 operation_list: list, initialized_check: int, previous_task: str) -> Tuple[str, List, int, str]:
     if operation != "initialize":
         # Create list from operation
         operation = operation.split()
