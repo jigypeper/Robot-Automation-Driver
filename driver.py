@@ -14,26 +14,26 @@ class DeviceDriver(socket.socket):
         self.robot = MockRobot()
         self.robot.home()
 
-    def open_connection(self):
+    def open_connection(self) -> str:
         # Create a TCP/IP socket
         address = (DeviceDriver.ip, DeviceDriver.port)
         self.server.bind(address)
         self.server.listen(1)
         return ""
 
-    def check_status(self):
+    def check_status(self) -> str:
         result = self.robot.status()
         if "Error" in result:
             return result
         else:
             return ""
 
-    def initialize(self):
+    def initialize(self) -> str:
         self.robot.home()
         result = DeviceDriver.check_status(self)
         return result
 
-    def execute_operation(self, operation: str, parameter_name: list, parameter_values: list):
+    def execute_operation(self, operation: str, parameter_name: list, parameter_values: list) -> str:
         # check operation is valid
         if operation in DeviceDriver.operations:
             # check if operation is pick/place
@@ -70,7 +70,7 @@ class DeviceDriver(socket.socket):
         else:
             return "Not a valid operation."
 
-    def abort(self):
+    def abort(self) -> str:
         return ""
 
 
