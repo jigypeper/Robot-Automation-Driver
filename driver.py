@@ -170,10 +170,10 @@ def data_handler(operation: str, driver_instance: DeviceDriver,
             return response, operation_list, initialized_check, previous_task
 
     if "abort" in operation:
-        operation_list = []
-        initialized_check = 0
-        previous_task = ""
-        response = driver_instance.abort()
+        operation_list: list = []
+        initialized_check: int = 0
+        previous_task: str = ""
+        response: str = driver_instance.abort()
         return response, operation_list, initialized_check, previous_task
     elif len(operation_list) == 4:
         operation_list = ["initialize"]
